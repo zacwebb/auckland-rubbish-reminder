@@ -4,6 +4,10 @@ import { fetchData } from '../src/rubbish';
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
+beforeEach(() => {
+    jest.clearAllMocks();
+});
+
 describe('fetching data', () => {
     test('expected return values', async () => {
         const expectedResponse = {
@@ -48,6 +52,31 @@ describe('fetching data', () => {
 
         expect(axios.post).toHaveBeenCalled();
         expect(axios.get).toHaveBeenCalled();
+        expect(response).toMatchObject(expectedResponse);
+    });
+
+    test('invalid query address', async () => {
+        const expectedResponse = {
+            status: 'fail',
+            data: {
+                address: 'Invalid address search. Try adjusting your query.',
+            },
+        };
+
+        const mockedAddressResponse: AxiosResponse = {
+            data: [],
+            status: 200,
+            statusText: 'OK',
+            headers: {},
+            config: {},
+        };
+
+        mockedAxios.post.mockResolvedValueOnce(mockedAddressResponse);
+        expect(axios.post).not.toHaveBeenCalled();
+
+        const response = await fetchData('t');
+
+        expect(axios.post).toHaveBeenCalled();
         expect(response).toMatchObject(expectedResponse);
     });
 });

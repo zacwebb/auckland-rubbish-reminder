@@ -36,7 +36,7 @@ export const fetchData = async (
 > => {
     try {
         const addressData = await getAddressData(queryAddress);
-        const collectionData = await scrapeSite('12343749528');
+        const collectionData = await scrapeSite(addressData.id);
 
         return success({
             ...collectionData,
