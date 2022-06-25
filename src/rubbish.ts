@@ -89,7 +89,7 @@ const scrapeSite = async (addressId: string): Promise<CollectionData> => {
         nextCollectionElement.text,
         dateFormatString,
         { zone: 'Pacific/Auckland' },
-    ).toLocaleString();
+    ).toFormat('dd/MM/y');
 
     const firstIconElement = nextCollectionElement.nextElementSibling;
     const secondIconElement = firstIconElement.nextElementSibling;
