@@ -1,4 +1,4 @@
-import Fastify, { FastifyReply, FastifyRequest } from 'fastify';
+import Fastify, { FastifyReply, FastifyRequest, Logger } from 'fastify';
 import { fetchData } from './rubbish';
 import 'dotenv/config';
 import { fail } from 'typescript-jsend';
