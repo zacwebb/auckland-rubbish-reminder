@@ -31,8 +31,6 @@ const start = async () => {
 
         const data = await fetchData(address);
 
-        debugger;
-
         switch (data.status) {
             case 'error':
                 reply.code(500).send(data);
