@@ -18,3 +18,13 @@ jobs:
         run: yarn
       - name: Run tests
         run: yarn jest
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [lint, tests]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Railway CLI
+        run: yarn global add @railway/cli
+      - name: Deploy to Railway
+        run: railway up --service auckland-rubbish-reminder
