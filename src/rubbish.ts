@@ -8,6 +8,7 @@ import {
     JSendObject,
     success,
 } from 'typescript-jsend';
+import { logError, logInfo } from './logging';
 
 const dateClass = '.m-r-1';
 
@@ -49,28 +50,34 @@ export const fetchData = async (
             });
         }
 
+        logError(err);
+
         return error('Error fetching data.');
     }
 };
 
 const getAddressData = async (addressString: string): Promise<addressData> => {
     try {
-        const result = (
-            await axios.post(
-                'https://www.aucklandcouncil.govt.nz/_vti_bin/ACWeb/ACservices.svc/GetMatchingPropertyAddresses',
-                {
-                    ResultCount: 1,
-                    SearchText: addressString,
-                    RateKeyRequired: true,
-                },
-            )
-        ).data[0];
+        const result = await axios.post(
+            'https://www.aucklandcouncil.govt.nz/_vti_bin/ACWeb/ACservices.svc/GetMatchingPropertyAddresses',
+            {
+                ResultCount: 1,
+                SearchText: addressString,
+                RateKeyRequired: true,
+            },
+        );
+
+        logInfo(result.data);
+
+        const resultData = result.data[0];
 
         return {
-            address: result.Address,
-            id: result.ACRateAccountKey,
+            address: resultData.Address,
+            id: resultData.ACRateAccountKey,
         };
     } catch (err) {
+        logError(err);
+
         throw new InvalidAddressError();
     }
 };

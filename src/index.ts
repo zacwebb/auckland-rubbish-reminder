@@ -3,6 +3,7 @@ import { fetchData } from './rubbish';
 import 'dotenv/config';
 import { fail } from 'typescript-jsend';
 import fastifyRateLimit from '@fastify/rate-limit';
+import { logError } from './logging';
 
 type AddressRequst = FastifyRequest<{
     Querystring: { address: string };
@@ -11,14 +12,16 @@ type AddressRequst = FastifyRequest<{
 const start = async () => {
     const fastify = Fastify();
 
-    await fastify.register(fastifyRateLimit, {
-        max: 5,
-        timeWindow: '24 hours',
-        errorResponseBuilder: (request, context) => ({
-            status: 'error',
-            message: `Rate limit exceeded, retry in ${context.after}.`,
-        }),
-    });
+    if (process.env.RATE_LIMIT_ENABLED === 'true') {
+        await fastify.register(fastifyRateLimit, {
+            max: 5,
+            timeWindow: '24 hours',
+            errorResponseBuilder: (request, context) => ({
+                status: 'error',
+                message: `Rate limit exceeded, retry in ${context.after}.`,
+            }),
+        });
+    }
 
     fastify.get('/', async (request: AddressRequst, reply: FastifyReply) => {
         const { address } = request.query;
@@ -50,6 +53,8 @@ const start = async () => {
             host: process.env.HOST as string,
         },
         (err: Error | null, address: string) => {
+            logError(err);
+
             if (err) throw err;
 
             // eslint-disable-next-line no-console
